@@ -1,7 +1,9 @@
 package main
 
 import (
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,5 +64,11 @@ func main() {
 	router := gin.Default()
 	router.GET("/health", getHealth)
 	router.POST("/score", postScore)
-	router.Run(":8081")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("Starting server on port %s", port)
+	router.Run(":" + port)
 }

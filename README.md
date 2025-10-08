@@ -44,6 +44,8 @@ This server simulates the decision routing gateway in this pipeline.
 
 ## High-Level Architecture
 
+![High-Level Architecture](./docs/high-level-architecture.png)
+
 ### Components Descriptions
 
 1. **Credit Score Gateway**
