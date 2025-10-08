@@ -7,9 +7,10 @@ import (
 )
 
 func ProcessCreditScoreRequest(request models.CreditScoreRequest) models.CreditScoreResponse {
-	championScore, err := GetCreditScore(request, "CHAMPION")
+	// wg := sync.WaitGroup{}
+	nykcsScore, err := GetCreditScore(request, "NYKCS")
 	if err != nil {
-		championScore = models.CreditScoreResponse{
+		nykcsScore = models.CreditScoreResponse{
 			Score:    0,
 			Decision: "UNDETERMINED",
 			Error: &models.Error{
@@ -19,9 +20,9 @@ func ProcessCreditScoreRequest(request models.CreditScoreRequest) models.CreditS
 		}
 	}
 
-	challengerScore, err := GetCreditScore(request, "CHALLENGER")
+	bkncsScore, err := GetCreditScore(request, "BKNCS")
 	if err != nil {
-		challengerScore = models.CreditScoreResponse{
+		bkncsScore = models.CreditScoreResponse{
 			Score:    0,
 			Decision: "UNDETERMINED",
 			Error: &models.Error{
@@ -30,8 +31,8 @@ func ProcessCreditScoreRequest(request models.CreditScoreRequest) models.CreditS
 			},
 		}
 	}
-	log.Printf("Champion Score: %+v", championScore)
-	log.Printf("Challenger Score: %+v", challengerScore)
+	log.Printf("NYKCS Score: %+v", nykcsScore)
+	log.Printf("BKNCS Score: %+v", bkncsScore)
 
-	return championScore
+	return nykcsScore
 }

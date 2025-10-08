@@ -8,13 +8,18 @@ import (
 )
 
 type Config struct {
-	GrpcPort                string `envconfig:"GRPC_PORT"`
-	HttpPort                string `envconfig:"HTTP_PORT"`
-	TcpPort                 string `envconfig:"TCP_PORT"`
-	ChampionBaseUrl         string `envconfig:"CHAMPION_BASE_URL"`
-	ChampionTimeoutMillis   int    `envconfig:"CHAMPION_TIMEOUT_MILLIS"`
-	ChallengerBaseUrl       string `envconfig:"CHALLENGER_BASE_URL"`
-	ChallengerTimeoutMillis int    `envconfig:"CHALLENGER_TIMEOUT_MILLIS"`
+	GrpcPort           string `envconfig:"GRPC_PORT"`
+	HttpPort           string `envconfig:"HTTP_PORT"`
+	TcpPort            string `envconfig:"TCP_PORT"`
+	NykCsBaseUrl       string `envconfig:"NYKCS_BASE_URL"`
+	NykCsTimeoutMillis int    `envconfig:"NYKCS_TIMEOUT_MILLIS"`
+	BknCsBaseUrl       string `envconfig:"BKNCS_BASE_URL"`
+	BknCsTimeoutMillis int    `envconfig:"BKNCS_TIMEOUT_MILLIS"`
+}
+
+type CreditScoreServiceConfig struct {
+	BaseUrl       string
+	TimeoutMillis int
 }
 
 func LoadConfig() Config {
@@ -23,6 +28,22 @@ func LoadConfig() Config {
 	if err := envconfig.Process("CSG", &cfg); err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
-	log.Printf("Config: %+v", cfg)
 	return cfg
+}
+
+func (c *Config) GetCreditScoreServiceConfig(service string) CreditScoreServiceConfig {
+	switch service {
+	case "NYKCS":
+		return CreditScoreServiceConfig{
+			BaseUrl:       c.NykCsBaseUrl,
+			TimeoutMillis: c.NykCsTimeoutMillis,
+		}
+	case "BKNCS":
+		return CreditScoreServiceConfig{
+			BaseUrl:       c.BknCsBaseUrl,
+			TimeoutMillis: c.BknCsTimeoutMillis,
+		}
+	default:
+		return CreditScoreServiceConfig{}
+	}
 }

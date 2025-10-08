@@ -15,17 +15,12 @@ import (
 
 func GetCreditScore(request models.CreditScoreRequest, service string) (models.CreditScoreResponse, error) {
 	cfg := config.LoadConfig()
-	baseUrl := cfg.ChampionBaseUrl
-	timeoutMillis := cfg.ChampionTimeoutMillis
-	if service == "CHALLENGER" {
-		baseUrl = cfg.ChallengerBaseUrl
-		timeoutMillis = cfg.ChallengerTimeoutMillis
-	}
+	serviceConfig := cfg.GetCreditScoreServiceConfig(service)
 	httpClient := &http.Client{
-		Timeout: time.Duration(timeoutMillis) * time.Millisecond,
+		Timeout: time.Duration(serviceConfig.TimeoutMillis) * time.Millisecond,
 	}
 
-	url := baseUrl + "/score"
+	url := serviceConfig.BaseUrl + "/score"
 	// log.Printf("Sending request to %s with body %+v", url, request)
 	requestBody, err := json.Marshal(request)
 	if err != nil {

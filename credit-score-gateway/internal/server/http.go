@@ -14,6 +14,7 @@ func getHealth(c *gin.Context) {
 }
 
 func postScore(c *gin.Context) {
+	log.Println("Received POST /score request")
 	var request models.CreditScoreRequest
 	if err := c.BindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -26,8 +27,9 @@ func postScore(c *gin.Context) {
 		})
 		return
 	}
-
+	log.Println("Processing credit score request")
 	response := domain.ProcessCreditScoreRequest(request)
+	log.Println("Credit score request processed")
 	c.JSON(http.StatusOK, gin.H{
 		"score":    response.Score,
 		"decision": response.Decision,
