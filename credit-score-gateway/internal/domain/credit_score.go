@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,7 +26,19 @@ func GetCreditScore(request models.CreditScoreRequest, service string) (models.C
 	}
 
 	url := baseUrl + "/score"
-	response, err := httpClient.Get(url)
+	// log.Printf("Sending request to %s with body %+v", url, request)
+	requestBody, err := json.Marshal(request)
+	if err != nil {
+		return models.CreditScoreResponse{}, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	httpRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return models.CreditScoreResponse{}, fmt.Errorf("failed to create request: %w", err)
+	}
+	httpRequest.Header.Set("Content-Type", "application/json")
+
+	response, err := httpClient.Do(httpRequest)
 	if err != nil {
 		return models.CreditScoreResponse{}, fmt.Errorf("failed to get champion score: %w", err)
 	}
@@ -46,5 +59,12 @@ func GetCreditScore(request models.CreditScoreRequest, service string) (models.C
 	if err != nil {
 		return models.CreditScoreResponse{}, fmt.Errorf("failed to unmarshal response body (raw: %s): %w", string(body), err)
 	}
+	if scoreResponse.Error == nil {
+		scoreResponse.Error = &models.Error{
+			ErrorCode:    "",
+			ErrorMessage: "",
+		}
+	}
+
 	return scoreResponse, nil
 }

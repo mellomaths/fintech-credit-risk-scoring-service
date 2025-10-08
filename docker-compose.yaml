@@ -8,6 +8,8 @@ services:
       - 3000:3000
     environment:
       - PORT=3000
+    networks:
+      - credit-score-network
   challenger-credit-score:
     container_name: challenger-credit-score
     build:
@@ -17,6 +19,8 @@ services:
       - 3001:3001
     environment:
       - PORT=3001
+    networks:
+      - credit-score-network
   credit-score-gateway:
     container_name: credit-score-gateway
     build:
@@ -27,10 +31,16 @@ services:
       - 8081:8081
       - 8082:8082
     environment:
-      - HTTP_PORT=8080
-      - TCP_PORT=8081
-      - GRPC_PORT=8082
-      - CHAMPION_BASE_URL=http://champion-credit-score:3000
-      - CHAMPION_TIMEOUT_MILLIS=250
-      - CHALLENGER_BASE_URL=http://challenger-credit-score:3001
-      - CHALLENGER_TIMEOUT_MILLIS=250
+      - CSG_HTTP_PORT=8080
+      - CSG_TCP_PORT=8081
+      - CSG_GRPC_PORT=8082
+      - CSG_CHAMPION_BASE_URL=http://champion-credit-score:3000
+      - CSG_CHAMPION_TIMEOUT_MILLIS=250
+      - CSG_CHALLENGER_BASE_URL=http://challenger-credit-score:3001
+      - CSG_CHALLENGER_TIMEOUT_MILLIS=250
+    networks:
+      - credit-score-network
+
+networks:
+  credit-score-network:
+    driver: bridge
