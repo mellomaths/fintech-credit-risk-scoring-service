@@ -33,6 +33,21 @@ func ProcessCreditScoreRequest(request models.CreditScoreRequest) models.CreditS
 	}
 	log.Printf("NYKCS Score: %+v", nykcsScore)
 	log.Printf("BKNCS Score: %+v", bkncsScore)
-
-	return nykcsScore
+	championServiceName := GetChampionCreditScore(request)
+	log.Printf("Champion Service Name: %s", championServiceName)
+	switch championServiceName {
+	case "NYKCS":
+		return nykcsScore
+	case "BKNCS":
+		return bkncsScore
+	default:
+		return models.CreditScoreResponse{
+			Score:    0,
+			Decision: "UNDETERMINED",
+			Error: &models.Error{
+				ErrorCode:    "INTERNAL_ERROR",
+				ErrorMessage: "Unknown champion service name",
+			},
+		}
+	}
 }
